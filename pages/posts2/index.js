@@ -14,7 +14,6 @@ export default function POSTS() {
   const showData = async () => {
     getData();
     setLoading(false);
-    console.log(data);
   }
 
   const getData = async () => {
