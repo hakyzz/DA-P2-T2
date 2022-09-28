@@ -6,9 +6,9 @@ export default function Home() {
   useEffect(() => {
     const init = 1;
     setCount(init + count);
-  });
+  }, []);
 
-  const increaseScore = () => setCount(1);
+  const increaseScore = () => setCount(count + 1);
 
   return (
     <div>
