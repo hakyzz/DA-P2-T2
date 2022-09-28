@@ -1,35 +1,52 @@
 import { useState, useEffect } from "react";
 
+const apiURL = "https://jsonplaceholder.typicode.com/posts";
+
 export default function POSTS() {
   const [data, setData] = useState(null)
+  const [isLoading, setLoading] = useState(false)
 
   useEffect(() => {
-    const post = {
-      title: "Post1",
-      body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam nisi turpis, ultrices in tristique eget, faucibus ut dui. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.",
-      id: 1
-    };
-    setData([post])
+    setLoading(true);
+    showData();
   }, [])
 
-  function postAddHandle(event) {
-    event.preventDefault();
-    const title = event.target.elements.title.value;
-    const body = event.target.elements.body.value;
-    const post = {
-      title: title,
-      body: body,
-      id: 2
-    };
-    const newPosts = data.concat(post);
-    setData(newPosts);
+  const showData = async () => {
+    getData();
+    setLoading(false);
+    console.log(data);
   }
 
+  const getData = async () => {
+    const data = await fetch(apiURL);
+    const posts = await data.json();
+    setData(posts);
+  };
+
+  const postData = async (e) => {
+    e.preventDefault();
+
+    fetch(apiURL, {
+      method: 'POST',
+      body: JSON.stringify({
+        title: e.target.elements.title.value,
+        body: e.target.elements.body.value,
+        userId: data[data.length - 1].id + 1,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    });
+
+    getData();
+  }
+
+  if (isLoading) return <p className="text-gray-700 text-base">Fetching Posts...</p>
   if (!data) return <p>No POSTS fetched</p>
   return (
     <div>
       <h1 className="font-bold text-2xl m-2">ADD POSTS</h1>
-      <form onSubmit={postAddHandle} className="w-2/5">
+      <form onSubmit={postData} className="w-2/5">
         <input className="block w-full p-3 mt-2 text-gray-700 bg-gray-200 appearance-none focus:outline-none focus:bg-gray-300 focus:shadow-inner" name="title" placeholder="Title" />
         <input className="block w-full p-3 mt-2 text-gray-700 bg-gray-200 appearance-none focus:outline-none focus:bg-gray-300 focus:shadow-inner" name="body" placeholder="Body" />
         <button className="border border-indigo-500 bg-indigo-500 text-white rounded-md px-4 py-2 m-2 transition duration-500 ease select-none hover:bg-indigo-600 focus:outline-none focus:shadow-outline" type="submit">Add post</button>
@@ -38,7 +55,7 @@ export default function POSTS() {
 
       <h1 className="font-bold text-2xl m-2">POSTS</h1>
       {data.map(post =>
-        <div className="m-2 rounded overflow-hidden shadow-lg">
+        <div key={post.id} className="m-2 rounded overflow-hidden shadow-lg">
           <div className="px-6 py-4">
             <div className="font-bold text-xl mb-2">{post.title}</div>
             <p className="text-gray-700 text-base"> {post.body} </p>
