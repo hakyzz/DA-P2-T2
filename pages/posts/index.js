@@ -6,6 +6,15 @@ export default function Home() {
 
   useEffect(() => {
     setLoading(true)
+
+    const getData = async () => {
+      const data = await fetch("https://jsonplaceholder.typicode.com/posts");
+      const posts = await data.json();
+      setData(posts);
+      setLoading(false);
+    };
+
+    getData();
   }, [])
 
   if (isLoading) return <p className="text-gray-700 text-base">Fetching Posts...</p>
